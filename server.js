@@ -19,6 +19,7 @@ const typeDefs = gql`
   type Query {
     greetings: String!
     tasks: [Task!]
+    task(id: ID!): Task
   }
 
   type User {
@@ -40,7 +41,8 @@ const resolvers = {
   // Query-level resolver
   Query: {
     greetings: () => "Hello",
-    tasks: () => tasks
+    tasks: () => tasks,
+    task: (_, args) => tasks.find(task => task.id === args.id) 
   },
   // Field-Level resolver:
   Task: {
