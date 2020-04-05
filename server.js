@@ -2,9 +2,9 @@ const express = require('express');
 const { ApolloServer, gql } = require('apollo-server-express');
 const cors = require('cors');
 const dotEnv = require('dotenv');
-const uuid = require('uuid');
 
-const { tasks, users } = require('./constants');
+
+const resolvers = require('./resolvers');
 
 
 dotEnv.config();
@@ -49,31 +49,6 @@ const typeDefs = gql`
     user: User!
   }
 `;
-
-const resolvers = {
-  // Query-level resolver
-  Query: {
-    greetings: () => "Hello",
-    tasks: () => tasks,
-    task: (_, args) => tasks.find(task => task.id === args.id) ,
-    users: () => users,
-    user: (_, { id }) => users.find(user => user.id === id),
-  },
-  Mutation: {
-    createTask: (_, { input }) => {
-      const task = { ...input, id: uuid.v4() };
-      tasks.push(task);
-      return task;
-    }
-  },
-  // Field-Level resolver:
-  Task: {
-    user: ({ userId }) => users.find(user => user.id === userId)
-  },
-  User: {
-    tasks: ({ id }) => tasks.filter(task => task.userId === id)
-  },
-};
 
 const apolloServer = new ApolloServer({
   typeDefs,
